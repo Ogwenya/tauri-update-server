@@ -130,7 +130,6 @@ exports.downloadLatestRelease = async (req, res) => {
 
     if (downloadResponse.ok) {
       const filename = data.name;
-      console.log(downloadResponse.headers.get("content-length"));
 
       // Set response headers for triggering file download
       await res.setHeader("Content-Type", "application/octet-stream");
@@ -144,7 +143,7 @@ exports.downloadLatestRelease = async (req, res) => {
       );
 
       // Pipe the zip file to the client's browser
-      const readableStream = await Readable.from(downloadResponse.body);
+      const readableStream = Readable.from(downloadResponse.body);
       await readableStream.pipe(res);
 
       readableStream.on("end", () => {
@@ -158,7 +157,7 @@ exports.downloadLatestRelease = async (req, res) => {
         );
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+    console.log({ error });
+    res.status(500).send({ error: error.message });
   }
 };
